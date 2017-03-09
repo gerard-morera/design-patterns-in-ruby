@@ -110,3 +110,66 @@ class MakeCakeTask < CompositeTask
   end
 end
 ```
+---------------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------
+EDIT
+---------------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------
+
+A less inheritance dependant implementation could be:
+
+```
+class CompositeTask
+  def initialize
+    @subtasks = []
+  end
+
+  def add_subtask(task)
+    subtasks << task
+  end
+
+  def remove_subtask(task)
+    subtasks.delete(task)
+  end
+
+  private
+
+  attr_reader :subtasks
+end
+
+class MakeBatterTask
+  def initialize(required_tasks, composite_task = CompositeTask.new)
+    @required_tasks       = required_tasks
+    @composite_task_class = composite_task_class
+  end
+
+  def call
+    required_tasks.each { |task| composite_task.add_subtask(task) }
+  end
+
+  def get_time_required
+    required_tasks.reduce(0.0) do |time, task|
+      time + task.get_time_required
+    end
+  end
+
+  private 
+
+  attr_reader :composite_task, :required_tasks
+end
+
+
+class Task
+  attr_accessor :name, :parent
+
+  def initialize(name)
+    @name = name
+    @parent = nil
+  end
+
+  def get_time_required
+    0.0
+  end
+end
+``
+
